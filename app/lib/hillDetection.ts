@@ -48,7 +48,7 @@ function terrainFromFeature(feature: mapboxgl.MapboxGeoJSONFeature): TerrainType
     if (['track', 'service'].includes(cls)) return 'trail'
     if (['secondary', 'tertiary', 'street', 'primary', 'motorway', 'trunk'].includes(cls)) return 'road'
   }
-  const lid = feature.layer?.id
+  const lid = feature.layer?.id ?? ''
   if (lid.includes('path') || lid.includes('pedestrian') || lid.includes('steps')) return 'path'
   if (lid.includes('street') || lid.includes('primary') || lid.includes('secondary') || lid.includes('motorway')) return 'road'
   return 'trail'
@@ -56,7 +56,7 @@ function terrainFromFeature(feature: mapboxgl.MapboxGeoJSONFeature): TerrainType
 
 function isRoadLike(feature: mapboxgl.MapboxGeoJSONFeature): boolean {
   if (feature.geometry.type !== 'LineString') return false
-  const lid = feature.layer?.id
+  const lid = feature.layer?.id ?? ''
   // Include any Mapbox road/path layer
   if (lid.startsWith('road') || lid.includes('path') || lid.includes('pedestrian') || lid.includes('trail')) return true
   if (feature.sourceLayer === 'road') return true
