@@ -101,7 +101,7 @@ export function detectHills(
 
     // Deduplicate same road segment appearing across tile boundaries
     const key = feature.id != null
-      ? `${feature.layer.id}-${feature.id}`
+      ? `${feature.layer?.id ?? ''}-${feature.id}`
       : `${rawCoords[0].join(',')}-${rawCoords[rawCoords.length - 1].join(',')}`
     if (seenKeys.has(key)) continue
     seenKeys.add(key)
@@ -119,7 +119,7 @@ export function detectHills(
       const e0 = elevations[i - 1]
       const e1 = elevations[i]
 
-      if (e0 === null || e1 === null) {
+      if (e0 == null || e1 == null) {
         if (segStart !== null) { pushSegment(segStart, i - 1); segStart = null }
         continue
       }
