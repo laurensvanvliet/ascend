@@ -6,6 +6,8 @@ import type { Hill, DifficultyLevel } from '../lib/hillTypes'
 interface Props {
   hill: Hill
   onClose: () => void
+  isSaved: boolean
+  onToggleSave: () => void
 }
 
 const TERRAIN_LABELS: Record<string, string> = {
@@ -89,7 +91,7 @@ function HillSilhouette({ profile, difficulty }: { profile: Hill['elevationProfi
   )
 }
 
-export default function HillDetailCard({ hill, onClose }: Props) {
+export default function HillDetailCard({ hill, onClose, isSaved, onToggleSave }: Props) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -112,15 +114,26 @@ export default function HillDetailCard({ hill, onClose }: Props) {
 
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#1e1e1e]">
         <span className="text-[10px] font-semibold tracking-[0.16em] text-white uppercase">Hill</span>
-        <button
-          onClick={handleClose}
-          className="text-[#555] hover:text-white transition-colors"
-          aria-label="Close"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onToggleSave}
+            className={`transition-colors ${isSaved ? 'text-white' : 'text-[#555] hover:text-white'}`}
+            aria-label={isSaved ? 'Unsave hill' : 'Save hill'}
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill={isSaved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 2h10a1 1 0 0 1 1 1v11l-5-3-5 3V3a1 1 0 0 1 1-1z" />
+            </svg>
+          </button>
+          <button
+            onClick={handleClose}
+            className="text-[#555] hover:text-white transition-colors"
+            aria-label="Close"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="px-5 py-4">

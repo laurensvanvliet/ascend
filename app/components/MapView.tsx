@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import FilterPanel from './FilterPanel'
 import HillDetailCard from './HillDetailCard'
+import SavedHillsPanel from './SavedHillsPanel'
 import SearchBar from './SearchBar'
 import { detectHills } from '../lib/hillDetection'
 import type { Hill, Filters } from '../lib/hillTypes'
@@ -78,9 +79,32 @@ export default function MapView() {
     ...DEFAULT_FILTERS,
     terrain: new Set(DEFAULT_FILTERS.terrain),
   }))
+  const [savedHills, setSavedHills] = useState<Hill[]>(() => {
+    if (typeof window === 'undefined') return []
+    try {
+      const stored = localStorage.getItem('saved-hills')
+      return stored ? JSON.parse(stored) : []
+    } catch { return [] }
+  })
+  const [showSavedPanel, setShowSavedPanel] = useState(false)
 
   useEffect(() => { filtersRef.current = filters }, [filters])
   useEffect(() => { hillsRef.current = hills }, [hills])
+  useEffect(() => {
+    localStorage.setItem('saved-hills', JSON.stringify(savedHills))
+  }, [savedHills])
+
+  const handleToggleSave = useCallback((hill: Hill) => {
+    setSavedHills(prev =>
+      prev.some(h => h.id === hill.id) ? prev.filter(h => h.id !== hill.id) : [...prev, hill]
+    )
+  }, [])
+
+  const handleSelectSavedHill = useCallback((hill: Hill) => {
+    setSelectedHill(hill)
+    setShowSavedPanel(false)
+    mapRef.current?.flyTo({ center: hill.center, zoom: 16, duration: 600 })
+  }, [])
 
   const runDetection = useCallback((center: [number, number], radiusKm: number) => {
     const map = mapRef.current
@@ -335,6 +359,29 @@ export default function MapView() {
         mapboxToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN!}
       />
 
+      <div className="fixed top-4 left-[344px] z-10 flex flex-col items-start gap-2">
+        <button
+          onClick={() => setShowSavedPanel(p => !p)}
+          className={`w-11 h-11 flex items-center justify-center rounded-xl border transition-colors ${
+            showSavedPanel
+              ? 'bg-white text-black border-white'
+              : 'bg-[#111] border-[#222] text-[#555] hover:text-white'
+          }`}
+          aria-label="Saved hills"
+        >
+          <svg width="15" height="15" viewBox="0 0 16 16" fill={showSavedPanel ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 2h10a1 1 0 0 1 1 1v11l-5-3-5 3V3a1 1 0 0 1 1-1z" />
+          </svg>
+        </button>
+        {showSavedPanel && (
+          <SavedHillsPanel
+            hills={savedHills}
+            onRemove={(id) => setSavedHills(prev => prev.filter(h => h.id !== id))}
+            onSelect={handleSelectSavedHill}
+          />
+        )}
+      </div>
+
       <FilterPanel
         filters={filters}
         onChange={setFilters}
@@ -356,7 +403,12 @@ export default function MapView() {
       )}
 
       {selectedHill && (
-        <HillDetailCard hill={selectedHill} onClose={() => setSelectedHill(null)} />
+        <HillDetailCard
+          hill={selectedHill}
+          onClose={() => setSelectedHill(null)}
+          isSaved={savedHills.some(h => h.id === selectedHill.id)}
+          onToggleSave={() => handleToggleSave(selectedHill)}
+        />
       )}
     </div>
   )

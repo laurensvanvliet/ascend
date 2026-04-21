@@ -65,9 +65,9 @@ export default function SearchBar({ onSelect, mapboxToken }: Props) {
 
   return (
     <div className="fixed top-4 left-4 z-10 w-80">
-      <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden">
+      <div className="group bg-[#111] border border-[#222] rounded-xl overflow-hidden">
         <div className="flex items-center px-4 py-3 gap-3">
-          <svg className="w-3.5 h-3.5 text-[#555] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5 text-[#555] group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
           </svg>
           <input
@@ -79,7 +79,7 @@ export default function SearchBar({ onSelect, mapboxToken }: Props) {
             onFocus={() => results.length > 0 && setOpen(true)}
             onBlur={() => setTimeout(() => setOpen(false), 150)}
             placeholder="Search location…"
-            className="flex-1 text-sm text-white placeholder-[#444] outline-none bg-transparent"
+            className="flex-1 text-sm text-white placeholder-[#444] group-hover:placeholder-white transition-colors outline-none bg-transparent"
           />
           {query && (
             <button
