@@ -1,13 +1,17 @@
 import { type NextRequest } from 'next/server'
 
 async function hasOutdoorPanorama(lat: string, lng: string, key: string): Promise<boolean> {
-  const url =
-    `https://maps.googleapis.com/maps/api/streetview/metadata` +
-    `?location=${lat},${lng}&source=outdoor&radius=50&key=${key}`
-  const res = await fetch(url)
-  if (!res.ok) return false
-  const data = await res.json()
-  return data.status === 'OK'
+  try {
+    const url =
+      `https://maps.googleapis.com/maps/api/streetview/metadata` +
+      `?location=${lat},${lng}&source=outdoor&radius=50&key=${key}`
+    const res = await fetch(url)
+    if (!res.ok) return false
+    const data = await res.json()
+    return data.status === 'OK'
+  } catch {
+    return false
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -43,12 +47,11 @@ export async function GET(request: NextRequest) {
   const res = await fetch(url)
   if (!res.ok) return new Response('Street View unavailable', { status: res.status })
 
-  const contentLength = res.headers.get('content-length')
-  if (contentLength && parseInt(contentLength) < 5000) {
+  const buffer = await res.arrayBuffer()
+  if (buffer.byteLength < 5000) {
     return new Response('No imagery', { status: 404 })
   }
 
-  const buffer = await res.arrayBuffer()
   return new Response(buffer, {
     headers: {
       'Content-Type': 'image/jpeg',
