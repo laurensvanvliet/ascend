@@ -1,7 +1,8 @@
 import mapboxgl from 'mapbox-gl'
 import type { Hill, DifficultyLevel, TerrainType } from './hillTypes'
 
-const MIN_GRADE_PCT = 5
+const MIN_GRADE_PCT = 7
+const MIN_ELEVATION_GAIN_M = 5
 
 function distM(a: [number, number], b: [number, number]): number {
   const R = 6371000
@@ -145,7 +146,7 @@ export function detectHills(
 
       let length = 0
       for (let i = 1; i < segCoords.length; i++) length += distM(segCoords[i - 1], segCoords[i])
-      if (length < stepMeters * 2) return
+      if (length < 80) return
 
       // Normalize direction: always low → high
       if (segElevs[0] > segElevs[segElevs.length - 1]) {
@@ -154,7 +155,7 @@ export function detectHills(
       }
 
       const totalRise = segElevs[segElevs.length - 1] - segElevs[0]
-      if (totalRise <= 0) return
+      if (totalRise < MIN_ELEVATION_GAIN_M) return
 
       const avgGrade = gradePercent(totalRise, length)
       const elevationGain = Math.round(totalRise)

@@ -32,7 +32,7 @@ export interface Filters {
 export const DEFAULT_FILTERS: Filters = {
   inclineMin: 0,
   inclineMax: 40,
-  lengthMin: 50,
+  lengthMin: 80,
   lengthMax: 2000,
   difficulty: 'any',
   terrain: new Set(['road', 'trail', 'path', 'mixed']),
