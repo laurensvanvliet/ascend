@@ -594,7 +594,7 @@ export default function MapView() {
 
     function frame() {
       const t = (Date.now() % period) / period
-      map.setPaintProperty('hill-selected-pulse', 'line-gradient', buildPulseGradient(t, color))
+      mapRef.current?.setPaintProperty('hill-selected-pulse', 'line-gradient', buildPulseGradient(t, color))
       pulseAnimRef.current = requestAnimationFrame(frame)
     }
 
