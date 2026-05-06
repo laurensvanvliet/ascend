@@ -42,16 +42,16 @@ export default function SavedHillsPanel({ hills, onRemove, onSelect }: Props) {
                 style={{ background: DIFFICULTY_COLORS[hill.difficulty] }}
               />
               <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-mono font-bold text-white">{hill.inclinePct}%</span>
+                <p className="text-[11px] font-medium text-white truncate">
+                  {hill.name || 'Unnamed hill'}
+                </p>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <span className="text-[11px] font-mono text-[#888]">{hill.inclinePct}%</span>
                   <span className="text-[11px] text-[#555]">
                     {hill.length >= 1000 ? `${(hill.length / 1000).toFixed(1)}km` : `${hill.length}m`}
                   </span>
                   <span className="text-[11px] text-[#555]">+{hill.elevationGain}m</span>
                 </div>
-                <p className="text-[10px] tracking-[0.1em] uppercase text-[#444] mt-0.5">
-                  {hill.terrain} · {hill.difficulty}
-                </p>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); onRemove(hill.id) }}

@@ -112,6 +112,7 @@ export function detectHills(
     const coords = resampleLine(rawCoords, stepMeters)
     const elevations = coords.map(c => map.queryTerrainElevation(c, { exaggerated: false }))
     const terrain = terrainFromFeature(feature)
+    const streetName = (feature.properties?.name as string | undefined) ?? ''
 
     let segStart: number | null = null
 
@@ -163,7 +164,8 @@ export function detectHills(
       if (distM(userCoord, center) > maxDistanceMeters) return
 
       hills.push({
-        id: `hill-${hills.length}-${key}-${start}`,
+        id: `hill-${key}-${start}`,
+        name: streetName,
         center,
         startCoord: segCoords[0],
         endCoord: segCoords[segCoords.length - 1],

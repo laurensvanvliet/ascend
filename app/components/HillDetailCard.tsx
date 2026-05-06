@@ -65,9 +65,14 @@ function HillSilhouette({ profile, difficulty }: { profile: Hill['elevationProfi
           <stop offset="0%" stopColor="#0a0a0a" />
           <stop offset="100%" stopColor="#161616" />
         </linearGradient>
-        <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.3} />
-          <stop offset="100%" stopColor={color} stopOpacity={0.04} />
+        {/* Horizontal gradients: desaturated at start (left), vivid at top (right) */}
+        <linearGradient id="dirFillGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={color} stopOpacity={0.03} />
+          <stop offset="100%" stopColor={color} stopOpacity={0.28} />
+        </linearGradient>
+        <linearGradient id="dirStrokeGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+          <stop offset="100%" stopColor={color} stopOpacity={1} />
         </linearGradient>
       </defs>
 
@@ -78,8 +83,11 @@ function HillSilhouette({ profile, difficulty }: { profile: Hill['elevationProfi
         return <line key={t} x1={0} y1={y} x2={W} y2={y} stroke="white" strokeOpacity={0.05} strokeWidth={1} />
       })}
 
-      <polygon points={polyPoints} fill="url(#fillGrad)" />
-      <polyline points={strokePoints} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+      <polygon points={polyPoints} fill="url(#dirFillGrad)" />
+      <polyline points={strokePoints} fill="none" stroke="url(#dirStrokeGrad)" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+
+      <text x={6} y={H - 5} fontSize={7} fill="white" fillOpacity={0.2} fontFamily="monospace" letterSpacing="0.08em">START</text>
+      <text x={W - 6} y={H - 5} fontSize={7} fill={color} fillOpacity={0.7} fontFamily="monospace" letterSpacing="0.08em" textAnchor="end">TOP ▶</text>
 
       {(() => {
         const peakIdx = elevs.indexOf(maxElev)
@@ -106,14 +114,16 @@ export default function HillDetailCard({ hill, onClose, isSaved, onToggleSave }:
 
   return (
     <aside
-      className={`fixed left-4 bottom-4 w-72 bg-[#111] border border-[#222] rounded-xl z-20 transition-all duration-250 ease-out overflow-hidden ${
+      className={`w-72 bg-[#111] border border-[#222] rounded-xl transition-all duration-250 ease-out overflow-hidden ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       }`}
     >
       <HillSilhouette profile={hill.elevationProfile} difficulty={hill.difficulty} />
 
       <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#1e1e1e]">
-        <span className="text-[10px] font-semibold tracking-[0.16em] text-white uppercase">Hill</span>
+        <span className="text-[10px] font-semibold tracking-[0.16em] text-white uppercase">
+          {hill.name || 'Hill'}
+        </span>
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleSave}

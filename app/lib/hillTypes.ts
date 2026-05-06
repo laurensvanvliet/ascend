@@ -3,6 +3,7 @@ export type TerrainType = 'road' | 'trail' | 'path' | 'mixed'
 
 export interface Hill {
   id: string
+  name: string
   center: [number, number]
   startCoord: [number, number]
   endCoord: [number, number]
